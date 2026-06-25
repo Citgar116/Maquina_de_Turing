@@ -70,7 +70,7 @@ class MaquinaTuringCodificadora {
     }
  
     public String ejecutar() {
-        System.out.println(">>> Maquina Codificadora");
+        System.out.println(" Maquina Codificadora");
         System.out.println("Estado: " + estado);
         cinta.imprimirCinta();
         System.out.println();
@@ -78,20 +78,20 @@ class MaquinaTuringCodificadora {
         while (!estado.equals("qf")) { // La maquina sigue mientras no llegue al estado final
  
             if (estado.equals("q0")) {
-                System.out.println("[q0] Entrada recibida. Pasando a codificar...");
+                System.out.println("[q0] Estado ");
                 estado = "q1";
  
             } else if (estado.equals("q1")) {
                 char leido = cinta.leer();
  
                 if (leido == '_') {
-                    System.out.println("[q1] Fin del mensaje. Pasando a estado final (qf).");
+                    System.out.println("[q1] estado final (qf).");
                     estado = "qf";
  
                 } else {
                     // Codificamos la letra y la escribimos en la misma celda
                     char codificado = codificar(leido);
-                    System.out.println("[q1] Leyo: '" + leido + "'  ->  Escribe: '" + codificado + "'");
+                    System.out.println("[q1]: '" + leido + "'  ->  Escribe: '" + codificado + "'");
                     cinta.escribir(codificado);
                     cinta.moverDerecha();
                     cinta.imprimirCinta();
@@ -125,7 +125,7 @@ class MaquinaTuringDecodificadora {
     }
  
     public String ejecutar() {
-        System.out.println(">>> Maquina Decodificadora");
+        System.out.println("Maquina Decodificadora");
         System.out.println("Estado: " + estado);
         cinta.imprimirCinta();
         System.out.println();
@@ -133,19 +133,19 @@ class MaquinaTuringDecodificadora {
         while (!estado.equals("qf")) {
  
             if (estado.equals("q0")) {
-                System.out.println("[q0] Entrada recibida pasa a decodificar...");
+                System.out.println("[q0] Primer estado");
                 estado = "q1";
  
             } else if (estado.equals("q1")) {
                 char leido = cinta.leer();
  
                 if (leido == '_') {
-                    System.out.println("[q1] Fin del mensaje. (qf).");
+                    System.out.println("[q1] estado final (qf).");
                     estado = "qf";
  
                 } else {
                     char decodificado = decodificar(leido);
-                    System.out.println("[q1] Leyo: '" + leido + "'  ->  Escribe: '" + decodificado + "'");
+                    System.out.println("[q1]: '" + leido + "'  ->  Escribe: '" + decodificado + "'");
                     cinta.escribir(decodificado);
                     cinta.moverDerecha();
                     cinta.imprimirCinta();
@@ -187,9 +187,5 @@ public class Main {
         String mensajeRecuperado = maquina2.ejecutar();
  
         System.out.println();
-        System.out.println("Resumen:");
-        System.out.println("  Original:   " + mensajeOriginal);
-        System.out.println("  Codificado: " + mensajeCodificado);
-        System.out.println("  Recuperado: " + mensajeRecuperado);
     }
 }
