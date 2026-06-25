@@ -1,123 +1,195 @@
 //NOMBRES: Citlali Garcia Espinoza
-//         Lesly Suseth Hernández Luévanos
+//         Lesli Suseth Hernández Luévanos
 //BOLETA: 2025670133
-//        Aquí pones tu boleta less kajska
+//        2025670161
 //GRUPO:  4CM1 Sistemas Computacionales
-//FECHA   23/06/2026
 //PROYECTO "MAQUINA DE TURING"  Proyecto 1
-
 import java.util.ArrayList;
-class Cinta {
-    // La clase cinta nos servirá como la memoria de la máquina de turing
-    private ArrayList<Character> celdas; 
-    private int checador;
-    // La variable checador nos servirá para movernos a lo largo de las celdas
-    private char vacio = '_';
-    // La variable vacio nos servirá para saber que la celda de la cinta está vacía
 
-    // Cuando se crea la cinta, se pasa el mensaje original 
-    public Cinta(String mensajeinicial) {
-        // Se pasa cada carácter del mensaje a la lista de celdas
-        this.celdas = new ArrayList<>();
-        for (char simbolo : mensajeinicial.toCharArray()) {
-            this.celdas.add(simbolo);
+class Cinta {
+ 
+    private ArrayList<Character> celdas;
+    private int cabezal;  
+    private char vacio = '_'; 
+ 
+    public Cinta(String mensaje) {
+        celdas = new ArrayList<Character>();
+        for (int i = 0; i < mensaje.length(); i++) {
+            celdas.add(mensaje.charAt(i));
         }
-        this.checador = 0; // Aquí indica al primer carácter de la frase 
+        cabezal = 0; 
     }
 
     public char leer() {
-        // Este método servira para leer el carácter 
-        if (checador < 0 || checador >= celdas.size()) {
-            return vacio; // Si el checador está fuera de los límites, devuelve el vacío
+        if (cabezal >= celdas.size()) {
+            return vacio; 
         }
-        return celdas.get(checador); 
+        return celdas.get(cabezal);
     }
-
+ 
     public void escribir(char simbolo) {
-        // Este método servirá para escribir un carácter en la cinta
-        if (checador >= celdas.size()) {
-            celdas.add(simbolo);
-        } else if (checador < 0) {
-            celdas.add(0, simbolo);
-            checador = 0;
-        } else {
-            celdas.set(checador, simbolo);
-        }
+        celdas.set(cabezal, simbolo);
     }
-
-    public void moverIzquierda() {
-        checador--;
-    }
-
+ 
     public void moverDerecha() {
-        checador++;
+        cabezal++;
     }
 
-    public void imprimirCinta() {
-        // Este método servirá para imprimir la cinta y ver la evolución
+    public String obtenerContenido() {
+        String resultado = "";
         for (int i = 0; i < celdas.size(); i++) {
-            if (i == checador) {
-                System.out.print("[" + celdas.get(i) + "] "); // Cabezal actual
+            resultado = resultado + celdas.get(i);
+        }
+        return resultado;
+    }
+ 
+    public void imprimirCinta() {
+        for (int i = 0; i < celdas.size(); i++) {
+            if (i == cabezal) {
+                System.out.print("[" + celdas.get(i) + "] ");
             } else {
-                System.out.print(celdas.get(i) + " "); 
+                System.out.print(celdas.get(i) + " ");
             }
         }
-        System.out.println(); 
+        System.out.println();
     }
 }
-
-class MaquinaTuring {
+ 
+// Tiene 3 estados:
+//   q0 = estado inicial 
+//   q1 = estado de codificación que va procesando letra por letra
+//   qf = estado final
+class MaquinaTuringCodificadora {
+ 
     private Cinta cinta;
-    private String estadoActual;
-
-    public MaquinaTuring(String mensaje) {
-        this.cinta = new Cinta(mensaje);
-        this.estadoActual = "q0"; // Estado inicial
+    private String estado;
+ 
+    public MaquinaTuringCodificadora(String mensaje) {
+        cinta = new Cinta(mensaje);
+        estado = "q0"; 
     }
-
-    public void ejecutar() {
-        System.out.println("Inicio");
+ 
+    public String ejecutar() {
+        System.out.println(">>> Maquina Codificadora");
+        System.out.println("Estado: " + estado);
         cinta.imprimirCinta();
-
-        // El ciclo while se ejecutará hasta que el estado actual sea el estado final
-        while (!estadoActual.equals("qf")) {
-            switch (estadoActual) {
-                case "q0":
-                    // El estado inicial valida que haya datos y pasa a codificar
-                    estadoActual = "q1";
-                    break;
-                case "q1":
-                    char simbolo = cinta.leer();
-                    if (simbolo == '_') {
-                        estadoActual = "qf"; // Si el símbolo es vacío, se pasa al estado final
-                    } else {
-                        // Si el símbolo no es vacío, se codifica, se escribe y se mueve a la derecha
-                        char simboloCodificado = codificar(simbolo);
-                        cinta.escribir(simboloCodificado);
-                        cinta.moverDerecha(); 
-                    }
-                    break;
+        System.out.println();
+     
+        while (!estado.equals("qf")) { // La maquina sigue mientras no llegue al estado final
+ 
+            if (estado.equals("q0")) {
+                System.out.println("[q0] Entrada recibida. Pasando a codificar...");
+                estado = "q1";
+ 
+            } else if (estado.equals("q1")) {
+                char leido = cinta.leer();
+ 
+                if (leido == '_') {
+                    System.out.println("[q1] Fin del mensaje. Pasando a estado final (qf).");
+                    estado = "qf";
+ 
+                } else {
+                    // Codificamos la letra y la escribimos en la misma celda
+                    char codificado = codificar(leido);
+                    System.out.println("[q1] Leyo: '" + leido + "'  ->  Escribe: '" + codificado + "'");
+                    cinta.escribir(codificado);
+                    cinta.moverDerecha();
+                    cinta.imprimirCinta();
+                }
             }
-            cinta.imprimirCinta(); // Se imprime la cinta después de cada cambio
         }
-        System.out.println("Fin");
+ 
+        String resultado = cinta.obtenerContenido();
+        System.out.println("\nMensaje codificado: " + resultado);
+        return resultado;
     }
 
-  
-    private char codificar(char simbolo) {
-        if (simbolo >= 'a' && simbolo <= 'z') {
-            return (char) (((simbolo - 'a' + 3) % 26) + 'a'); 
+    private char codificar(char letra) {
+        if (letra >= 'a' && letra <= 'z') {
+            int posicion = letra - 'a';    
+            int nuevaPosicion = (posicion + 3) % 26;
+            return (char)('a' + nuevaPosicion);
         }
-        return simbolo; // Si es un espacio u otro símbolo, lo deja igual para no romper el mensaje
+        return letra;
     }
 }
+ 
+class MaquinaTuringDecodificadora {
+ 
+    private Cinta cinta;
+    private String estado;
+ 
+    public MaquinaTuringDecodificadora(String mensajeCodificado) {
+        cinta = new Cinta(mensajeCodificado);
+        estado = "q0";
+    }
+ 
+    public String ejecutar() {
+        System.out.println(">>> Maquina Decodificadora");
+        System.out.println("Estado: " + estado);
+        cinta.imprimirCinta();
+        System.out.println();
+ 
+        while (!estado.equals("qf")) {
+ 
+            if (estado.equals("q0")) {
+                System.out.println("[q0] Entrada recibida pasa a decodificar...");
+                estado = "q1";
+ 
+            } else if (estado.equals("q1")) {
+                char leido = cinta.leer();
+ 
+                if (leido == '_') {
+                    System.out.println("[q1] Fin del mensaje. (qf).");
+                    estado = "qf";
+ 
+                } else {
+                    char decodificado = decodificar(leido);
+                    System.out.println("[q1] Leyo: '" + leido + "'  ->  Escribe: '" + decodificado + "'");
+                    cinta.escribir(decodificado);
+                    cinta.moverDerecha();
+                    cinta.imprimirCinta();
+                }
+            }
+        }
+ 
+        String resultado = cinta.obtenerContenido();
+        System.out.println("\nMensaje decodificado: " + resultado);
+        return resultado;
+    }
 
+    private char decodificar(char letra) {
+        if (letra >= 'a' && letra <= 'z') {
+            int posicion = letra - 'a';
+            int nuevaPosicion = (posicion - 3 + 26) % 26;
+            return (char)('a' + nuevaPosicion);
+        }
+        return letra;
+    }
+}
+ 
 public class Main {
+ 
     public static void main(String[] args) {
-        String mensaje = "Nose que poner"; // Mensaje original
-        System.out.println("Mensaje original: " + mensaje);
-        
-        MaquinaTuring maquina = new MaquinaTuring(mensaje);
-        maquina.ejecutar(); // Se ejecuta la máquina de turing
+ 
+        String mensajeOriginal = "hola";
+
+        System.out.println(" MAQUINA DE TURING");
+        System.out.println("Mensaje original: " + mensajeOriginal);
+        System.out.println();
+ 
+        // --Codifica--
+        MaquinaTuringCodificadora maquina1 = new MaquinaTuringCodificadora(mensajeOriginal);
+        String mensajeCodificado = maquina1.ejecutar();
+ 
+        // --Decodifica--
+        MaquinaTuringDecodificadora maquina2 = new MaquinaTuringDecodificadora(mensajeCodificado);
+        String mensajeRecuperado = maquina2.ejecutar();
+ 
+        System.out.println();
+        System.out.println("Resumen:");
+        System.out.println("  Original:   " + mensajeOriginal);
+        System.out.println("  Codificado: " + mensajeCodificado);
+        System.out.println("  Recuperado: " + mensajeRecuperado);
     }
 }
